@@ -26,6 +26,15 @@ module OmniAuth
         }
       end
 
+      def build_access_token
+        options.token_params.merge!(headers: {'Authorization' => basic_auth_header })
+        super
+      end
+
+      def basic_auth_header
+        "Basic " + Base64.strict_encode64("#{options[:client_id]}:#{options[:client_secret]}")
+      end
+
       def raw_info
         @raw_info ||= begin
                         ri = MultiJson.decode(access_token.get('/api/1.0/user').body)['user']
